@@ -30,3 +30,5 @@ export interface MatchesResponse {
   round: number;
   matches: Match[];
 }
+
+export type MatchFilter = "all" | "scheduled" | "finished";

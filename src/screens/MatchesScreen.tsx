@@ -1,13 +1,28 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import mockData from "../../data/matches.json";
-import type { MatchesResponse } from "../models/match";
+import type { MatchesResponse, MatchFilter } from "../models/match";
 import { MatchCard } from "../components/MatchCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getMatches } from "../services/http";
+import { MatchFilters } from "../components/MatchFilters";
 
 export function MatchesScreen() {
   const [state, setState] = useState<MatchesResponse | null>(null);
   const [isMock, setIsMock] = useState(false);
+  const [filter, setFilter] = useState<MatchFilter>("all");
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  const isFavorite = (id: string): boolean => {
+    return favorites.includes(id);
+  };
+
+  const toggleFavorite = (id: string): void => {
+    setFavorites((prev) =>
+      prev.includes(id)
+        ? prev.filter((favoriteId) => favoriteId !== id)
+        : [...prev, id],
+    );
+  };
 
   useEffect(() => {
     let active = true;
@@ -35,6 +50,24 @@ export function MatchesScreen() {
     };
   }, []);
 
+  const filteredMatches = useMemo(() => {
+    const matches = state?.matches ?? [];
+
+    switch (filter) {
+      case "scheduled":
+        return matches.filter(
+          (match) =>
+            match.status === "scheduled" || match.status === "postponed",
+        );
+
+      case "finished":
+        return matches.filter((match) => match.status === "finished");
+
+      default:
+        return matches;
+    }
+  }, [state, filter]);
+
   if (!state) {
     return <Text>Загрузка...</Text>;
   }
@@ -43,20 +76,25 @@ export function MatchesScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Матчи тура {round}</Text>
+      <Text style={styles.title}>МАТЧИ / {round} ТУР</Text>
 
-      {isMock && (
-        <Text style={styles.warning}>
-          Сервер недоступен. Показаны тестовые данные.
-        </Text>
-      )}
+      <View style={styles.content}>
+        <MatchFilters value={filter} onChange={setFilter} />
 
-      <FlatList
-        data={matches}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MatchCard match={item} />}
-        ListEmptyComponent={<Text>Матчей пока нет</Text>}
-      />
+        <FlatList
+          style={styles.list}
+          data={filteredMatches}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <MatchCard
+              match={item}
+              isFavorite={favorites.includes(item.id)}
+              onToggleFavorite={() => toggleFavorite(item.id)}
+            />
+          )}
+          ListEmptyComponent={<Text style={styles.empty}>Матчей пока нет</Text>}
+        />
+      </View>
     </View>
   );
 }
@@ -64,15 +102,27 @@ export function MatchesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#111827",
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 16,
+    color: "#F9FAFB",
+    fontSize: 23,
+    fontWeight: "800",
+    marginBottom: 24,
   },
-  warning: {
-    color: "#b45309",
-    marginBottom: 12,
+  content: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+  },
+  list: {
+    flex: 1,
+    minWidth: 0,
+  },
+  empty: {
+    color: "#9CA3AF",
+    textAlign: "center",
+    marginTop: 32,
   },
 });

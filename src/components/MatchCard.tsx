@@ -1,48 +1,43 @@
-
-import { StyleSheet, Text, View } from 'react-native';
-import type { Match } from '../models/match';
+import { StyleSheet, Text, View } from "react-native";
+import type { Match } from "../models/match";
+import { FavoriteButton } from "./FavoriteButton";
 
 interface Props {
   match: Match;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
-const statusLabels: Record<Match['status'], string> = {
-  finished: 'Завершён',
-  live: 'Идёт',
-  scheduled: 'Предстоящий',
-  postponed: 'Перенесён',
+const statusLabels: Record<Match["status"], string> = {
+  finished: "Завершён",
+  live: "Идёт",
+  scheduled: "Предстоящий",
+  postponed: "Перенесён",
 };
 
-export function MatchCard({ match }: Props) {
+export function MatchCard({ match, isFavorite, onToggleFavorite }: Props) {
   const { home, away, score, status, startsAt, minute } = match;
 
   const date = startsAt
-    ? new Date(startsAt).toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
+    ? new Date(startsAt).toLocaleString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
       })
-    : 'Дата уточняется';
+    : "Дата уточняется";
 
   return (
     <View style={styles.card}>
+      <FavoriteButton active={isFavorite} onPress={onToggleFavorite} />{" "}
       <View style={styles.header}>
         <Text style={styles.date}>{date}</Text>
 
-        <Text
-          style={[
-            styles.status,
-            status === 'live' && styles.live,
-          ]}
-        >
+        <Text style={[styles.status, status === "live" && styles.live]}>
           {statusLabels[status]}
-          {status === 'live' && minute != null
-            ? ` · ${minute}'`
-            : ''}
+          {status === "live" && minute != null ? ` · ${minute}'` : ""}
         </Text>
       </View>
-
       <View style={styles.teams}>
         <View style={styles.team}>
           <Text style={styles.teamName}>{home.name}</Text>
@@ -50,9 +45,7 @@ export function MatchCard({ match }: Props) {
         </View>
 
         <Text style={styles.score}>
-          {score !== null
-            ? `${score.home} : ${score.away}`
-            : '— : —'}
+          {score !== null ? `${score.home} : ${score.away}` : "— : —"}
         </Text>
 
         <View style={[styles.team, styles.away]}>
@@ -66,54 +59,54 @@ export function MatchCard({ match }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 18,
   },
   date: {
-    color: '#6b7280',
+    color: "#6b7280",
     fontSize: 13,
   },
   status: {
-    color: '#6b7280',
+    color: "#6b7280",
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   live: {
-    color: '#16a34a',
+    color: "#16a34a",
   },
   teams: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   team: {
     flex: 1,
   },
   away: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   teamName: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   city: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: "#9ca3af",
     marginTop: 4,
   },
   score: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
     marginHorizontal: 12,
-    color: '#111827',
+    color: "#111827",
   },
 });
