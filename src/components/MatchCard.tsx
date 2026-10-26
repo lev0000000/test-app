@@ -15,7 +15,11 @@ const statusLabels: Record<Match["status"], string> = {
   postponed: "Перенесён",
 };
 
-export function MatchCard({ match, isFavorite, onToggleFavorite }: Props) {
+export function MatchCard({
+  match,
+  isFavorite,
+  onToggleFavorite,
+}: Props)  {
   const { home, away, score, status, startsAt, minute } = match;
 
   const date = startsAt
@@ -29,7 +33,7 @@ export function MatchCard({ match, isFavorite, onToggleFavorite }: Props) {
 
   return (
     <View style={styles.card}>
-      <FavoriteButton active={isFavorite} onPress={onToggleFavorite} />{" "}
+      <FavoriteButton active={isFavorite} onPress={onToggleFavorite} />
       <View style={styles.header}>
         <Text style={styles.date}>{date}</Text>
 

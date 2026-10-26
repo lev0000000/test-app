@@ -6,12 +6,18 @@ import { useEffect, useState, useMemo } from "react";
 import { getMatches } from "../services/http";
 import { MatchFilters } from "../components/MatchFilters";
 import { useFavorites } from "../hooks/useFavorites";
+import { UpdatedAgo } from "../components/UpdatedAgo";
 
 export function MatchesScreen() {
   const [state, setState] = useState<MatchesResponse | null>(null);
   const [isMock, setIsMock] = useState(false);
   const [filter, setFilter] = useState<MatchFilter>("all");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  
 
   const isFavorite = (id: string): boolean => {
     return favorites.includes(id);
@@ -37,6 +43,7 @@ export function MatchesScreen() {
         }
 
         setState(data);
+        setUpdatedAt(new Date());
         setIsMock(false);
       })
       .catch(() => {
@@ -78,6 +85,7 @@ export function MatchesScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>МАТЧИ / {round} ТУР</Text>
+      {updatedAt && <UpdatedAgo since={updatedAt} />}
 
       <View style={styles.content}>
         <MatchFilters value={filter} onChange={setFilter} />
