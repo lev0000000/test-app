@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-
+import data from '../../data/matches.json'
 // Экран «Матчи тура» — задание в README.md, часть 1.
 export function MatchesScreen() {
   return (
