@@ -5,6 +5,7 @@ import { MatchCard } from "../components/MatchCard";
 import { useEffect, useState, useMemo } from "react";
 import { getMatches } from "../services/http";
 import { MatchFilters } from "../components/MatchFilters";
+import { useFavorites } from "../hooks/useFavorites";
 
 export function MatchesScreen() {
   const [state, setState] = useState<MatchesResponse | null>(null);
@@ -82,13 +83,12 @@ export function MatchesScreen() {
         <MatchFilters value={filter} onChange={setFilter} />
 
         <FlatList
-          style={styles.list}
           data={filteredMatches}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <MatchCard
               match={item}
-              isFavorite={favorites.includes(item.id)}
+              isFavorite={isFavorite(item.id)}
               onToggleFavorite={() => toggleFavorite(item.id)}
             />
           )}
